@@ -1,6 +1,7 @@
 package jpaswing.ui;
 
-import javax.imageio.ImageIO;
+import org.springframework.stereotype.Component;
+
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ListSelectionEvent;
@@ -8,20 +9,22 @@ import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.URL;
 import java.sql.*;
-
-public class PanelListaItems extends JPanel implements ListSelectionListener, ActionListener {
-    private InterfazItem principal;
+@Component
+public class PanelListaItems extends JPanel implements ListSelectionListener {
+    private ItemUI principal;
     private JScrollPane scrollItems;
     private JList<String> items;
     private DefaultListModel<String> listModel;
-    private JLabel imagenLabel;
-    public PanelListaItems(InterfazItem pPrincipal) throws SQLException {
+    private JTextField searchField;
+    private PanelImagen panelImagen;
+
+    public PanelListaItems(ItemUI pPrincipal, PanelImagen pPanelImagen) throws SQLException {
         principal = pPrincipal;
+        panelImagen = pPanelImagen;
         setLayout(new BorderLayout());
         setBorder(new TitledBorder("Items"));
-        setPreferredSize(new Dimension(200, 500));
+        setPreferredSize(new Dimension(200, 200));
 
         listModel = new DefaultListModel<>();
         items = new JList<>(listModel);
@@ -32,12 +35,24 @@ public class PanelListaItems extends JPanel implements ListSelectionListener, Ac
         scrollItems.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         add(scrollItems, BorderLayout.CENTER);
 
+
+        searchField = new JTextField();
+        searchField.setPreferredSize(new Dimension(200, 30));
+        searchField.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                filtrarLista(searchField.getText());
+            }
+        });
+        add(searchField, BorderLayout.SOUTH);
+
         cargarDatosDesdeBD();
     }
+
     private void cargarDatosDesdeBD() throws SQLException {
         try (Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/resources/IsaacItems")) {
             Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery("SELECT name FROM items");
+            ResultSet resultSet = statement.executeQuery("SELECT name FROM item");
             listModel.clear();
 
             while (resultSet.next()) {
@@ -50,13 +65,35 @@ public class PanelListaItems extends JPanel implements ListSelectionListener, Ac
         }
     }
 
-    @Override
-    public void actionPerformed(ActionEvent e) {
+    private void filtrarLista(String texto) {
+        DefaultListModel<String> filteredModel = new DefaultListModel<>();
+        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/resources/IsaacItems")) {
+            String query = "SELECT name FROM item WHERE name LIKE ?";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, "%" + texto + "%");
+            ResultSet resultSet = statement.executeQuery();
 
+            while (resultSet.next()) {
+                String item = resultSet.getString("name");
+                filteredModel.addElement(item);
+            }
+
+            items.setModel(filteredModel);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error al filtrar datos desde la base de datos", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     @Override
     public void valueChanged(ListSelectionEvent e) {
-
+        if (!e.getValueIsAdjusting()) {
+            String selectedItem = items.getSelectedValue();
+            if (selectedItem != null) {
+                Image image = PanelImagen.getImageFromDatabase(selectedItem);
+                panelImagen.updateImage(image);
+                panelImagen.setImageSize(200, 200);
+            }
+        }
     }
 }

@@ -1,6 +1,6 @@
 package jpaswing;
 
-import jpaswing.ui.InterfazItem;
+import jpaswing.ui.ItemUI;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -16,7 +16,7 @@ public class SwingApplication {
                 .web(WebApplicationType.NONE)
                 .run(args);
         EventQueue.invokeLater(()->{
-            InterfazItem interfaz = context.getBean(InterfazItem.class);
+            ItemUI interfaz = context.getBean(ItemUI.class);
             interfaz.setVisible(true);
         });
     }

@@ -14,15 +14,17 @@ public class Item {
     private int quality;
     private String description;
     private int stat;
+    private String url;
 
     public Item() {
     }
 
-    public Item(String name, int quality, String description, int stat) {
+    public Item(String name, int quality, String description, int stat, String url) {
         this.name = name;
         this.quality = quality;
         this.description = description;
         this.stat = stat;
+        this.url = url;
     }
 
     public Long getId() {
@@ -64,6 +66,15 @@ public class Item {
     public void setStat(int stat) {
         this.stat = stat;
     }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     @Override
-    public String toString(){return id + name + quality + description + stat;}
+    public String toString(){return id + name + quality + description + stat + url;}
 }
