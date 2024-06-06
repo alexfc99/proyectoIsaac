@@ -4,6 +4,7 @@ import jpaswing.entity.Item;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
+import javax.swing.border.TitledBorder;
 import java.awt.*;
 @Component
 public class PanelInformacion extends JPanel {
@@ -18,24 +19,21 @@ public class PanelInformacion extends JPanel {
 
 
     public PanelInformacion() {
-        setLayout(new GridLayout(4, 2));
-        Dimension textFieldSize = new Dimension(150, 30);
+        setLayout(new GridLayout(4, 2,10,10));
+
+        setBorder(new TitledBorder("Info"));
+
         label1 = new JLabel("ID:");
-        idField = new JTextField(10);
-        idField.setMinimumSize(textFieldSize);
-        idField.setPreferredSize(textFieldSize);
+        idField = new JTextField();
+
         label2 = new JLabel("Name:");
-        nameField = new JTextField(10);
-        idField.setMinimumSize(textFieldSize);
-        idField.setPreferredSize(textFieldSize);
+        nameField = new JTextField();
+
         label3 = new JLabel("Quality:");
-        qualityField = new JTextField(10);
-        idField.setMinimumSize(textFieldSize);
-        idField.setPreferredSize(textFieldSize);
+        qualityField = new JTextField();
+
         label4 = new JLabel("Description:");
-        descriptionField = new JTextField(10);
-        idField.setMinimumSize(textFieldSize);
-        idField.setPreferredSize(textFieldSize);
+        descriptionField = new JTextField();
 
         add(label1);
         add(idField);

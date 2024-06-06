@@ -11,39 +11,51 @@ import java.sql.SQLException;
 
 @Component
 public class ItemUI extends JFrame {
-    private PanelBanner panelBanner;
     private PanelListaItems panelListaItems;
     private PanelImagen panelImagen;
     private PanelInformacion panelInformacion;
-@Autowired
-private ItemRepository itemRepository;
-    public ItemUI() throws SQLException {
-        setTitle( "Isaac Items" );
-        setSize( 1000, 850 );
-        setDefaultCloseOperation( JFrame.EXIT_ON_CLOSE );
+    private PanelPersonajes panelPersonajes;
 
-        setLayout( new BorderLayout( ) );
+    private ItemRepository itemRepository;
 
-        panelBanner = new PanelBanner( );
-        add( panelBanner, BorderLayout.NORTH );
+    @Autowired
+    public ItemUI(ItemRepository itemRepository) throws SQLException {
+        this.itemRepository = itemRepository;
+        setTitle("Isaac Items");
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-        JPanel panelCentro = new JPanel( );
-        panelCentro.setLayout( new BorderLayout( ) );
+        JTabbedPane tabbedPane = new JTabbedPane();
 
-        add( panelCentro, BorderLayout.CENTER );
 
+        PanelBanner panelBannerItems = new PanelBanner();
+
+        JPanel panelItems = new JPanel(new BorderLayout());
+        panelItems.add(panelBannerItems, BorderLayout.NORTH);
         panelImagen = new PanelImagen();
-        panelCentro.add(panelImagen,BorderLayout.EAST);
-
-        panelListaItems = new PanelListaItems( this, panelImagen);
-        panelCentro.add( panelListaItems, BorderLayout.WEST );
-
+        panelItems.add(panelImagen, BorderLayout.EAST);
         panelInformacion = new PanelInformacion();
-        panelCentro.add(panelInformacion, BorderLayout.CENTER);
+        panelListaItems = new PanelListaItems(this, panelImagen);
+        panelItems.add(panelListaItems, BorderLayout.WEST);
+        panelItems.add(panelInformacion, BorderLayout.CENTER);
+        tabbedPane.addTab("Items", panelItems);
+
+
+        PanelBanner panelBannerPersonajes = new PanelBanner();
+
+        panelPersonajes = new PanelPersonajes(panelBannerPersonajes);
+        tabbedPane.addTab("Personajes", panelPersonajes);
+
+        add(tabbedPane);
+        setSize(1000, 650);
+        setLocationRelativeTo(null);
+
         Item item = itemRepository.findFirstByOrderByIdAsc();
         if (item != null) {
             panelInformacion.update(item);
         }
     }
 
+    public void actualizarPanelInformacion(Item item) {
+        panelInformacion.update(item);
+    }
 }
