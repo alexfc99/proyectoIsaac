@@ -19,7 +19,7 @@ public class PanelImagen extends JPanel {
 
     public PanelImagen() {
         setBorder(new TitledBorder("Image"));
-        setPreferredSize(new Dimension(400,400));
+        setPreferredSize(new Dimension(200,400));
     }
 
     @Override
