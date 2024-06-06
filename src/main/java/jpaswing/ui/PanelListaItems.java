@@ -1,5 +1,6 @@
 package jpaswing.ui;
 
+import jpaswing.entity.Item;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
@@ -10,6 +11,7 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
+
 @Component
 public class PanelListaItems extends JPanel implements ListSelectionListener {
     private ItemUI principal;
@@ -28,13 +30,12 @@ public class PanelListaItems extends JPanel implements ListSelectionListener {
 
         listModel = new DefaultListModel<>();
         items = new JList<>(listModel);
-        JScrollPane scrollItems = new JScrollPane(items);
+        scrollItems = new JScrollPane(items);
         items.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         items.addListSelectionListener(this);
         scrollItems.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         scrollItems.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         add(scrollItems, BorderLayout.CENTER);
-
 
         searchField = new JTextField();
         searchField.setPreferredSize(new Dimension(200, 30));
@@ -90,10 +91,37 @@ public class PanelListaItems extends JPanel implements ListSelectionListener {
         if (!e.getValueIsAdjusting()) {
             String selectedItem = items.getSelectedValue();
             if (selectedItem != null) {
-                Image image = PanelImagen.getImageFromDatabase(selectedItem);
-                panelImagen.updateImage(image);
-                panelImagen.setImageSize(200, 200);
+                try {
+                    Item item = obtenerItemDesdeBD(selectedItem);
+                    principal.actualizarPanelInformacion(item);
+
+                    Image image = PanelImagen.getImageFromDatabase(selectedItem);
+                    panelImagen.updateImage(image);
+                    panelImagen.setImageSize(200, 200);
+                } catch (SQLException ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(this, "Error al obtener datos del item seleccionado", "Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
         }
+    }
+
+    private Item obtenerItemDesdeBD(String nombre) throws SQLException {
+        Item item = null;
+        try (Connection connection = DriverManager.getConnection("jdbc:sqlite:src/main/resources/IsaacItems")) {
+            String query = "SELECT * FROM item WHERE name = ?";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setString(1, nombre);
+            ResultSet resultSet = statement.executeQuery();
+
+            if (resultSet.next()) {
+                item = new Item();
+                item.setId(Long.valueOf(resultSet.getString("id")));
+                item.setName(resultSet.getString("name"));
+                item.setQuality(Integer.parseInt(resultSet.getString("quality")));
+                item.setDescription(resultSet.getString("description"));
+            }
+        }
+        return item;
     }
 }
