@@ -37,6 +37,9 @@ public class PanelListaItems extends JPanel implements ListSelectionListener {
         scrollItems.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         add(scrollItems, BorderLayout.CENTER);
 
+
+        JPanel searchPanel = new JPanel(new BorderLayout());
+        JLabel searchLabel = new JLabel("Busqueda:");
         searchField = new JTextField();
         searchField.setPreferredSize(new Dimension(200, 30));
         searchField.addActionListener(new ActionListener() {
@@ -45,7 +48,13 @@ public class PanelListaItems extends JPanel implements ListSelectionListener {
                 filtrarLista(searchField.getText());
             }
         });
-        add(searchField, BorderLayout.SOUTH);
+
+
+        searchPanel.add(searchLabel, BorderLayout.WEST);
+        searchPanel.add(searchField, BorderLayout.CENTER);
+
+
+        add(searchPanel, BorderLayout.SOUTH);
 
         cargarDatosDesdeBD();
     }
