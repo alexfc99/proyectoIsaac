@@ -118,7 +118,7 @@ public class PanelPersonajes extends JPanel {
         nextButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                currentPersonajeId++; // Incrementar el ID
+                currentPersonajeId++;
                 try {
                     cargarInformacionPersonaje(currentPersonajeId);
                 } catch (Exception ex) {
