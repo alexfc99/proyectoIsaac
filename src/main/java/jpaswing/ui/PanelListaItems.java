@@ -39,7 +39,7 @@ public class PanelListaItems extends JPanel implements ListSelectionListener {
 
 
         JPanel searchPanel = new JPanel(new BorderLayout());
-        JLabel searchLabel = new JLabel("Busqueda:");
+        JLabel searchLabel = new JLabel("Búsqueda:");
         searchField = new JTextField();
         searchField.setPreferredSize(new Dimension(200, 30));
         searchField.addActionListener(new ActionListener() {
